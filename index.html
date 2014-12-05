@@ -23,6 +23,7 @@
         <div id="sideNav">
                 
           <div id="pageNav">
+		  
             <ul>
 			<li><button class="topcoat-button--large" id="undo"><img src="pics/undo.png">Undo</button> 
 			<button class="topcoat-button--large" id="redo"><img src="pics/redo.png">Redo</button></li>
@@ -37,7 +38,7 @@
   <div class="topcoat-switch__toggle"></div>
 </label> </li>	
 <li>Change background: 
-<input class="color" value="#4A4D4E" id="background" onchange="
+<input class="color" value="#FFFFFF" id="background" onchange="
 		  document.getElementsByTagName('CANVAS')[0].style.backgroundColor = '#'+this.color;
 		  document.getElementsByTagName('CANVAS')[1].style.backgroundColor = '#'+this.color;
 		  
@@ -64,13 +65,19 @@
         <header id="main-header">
           <div class="max-width">
             <hgroup>
-              <h1>Draplica JS</h1>
+              <h1>Draplica JS</h1> 
               <p>Make pictures, not war</p>
             </hgroup>
-            <a id="slide-menu-button" class="topcoat-icon-button--large--quiet"><span class="topcoat-icon--large topcoat-icon--menu-stack"></span></a>
+            <img id="logo" src="LOGO1.png">
+			
+			
           </div>
+		  
         </header>
         <div id="content" class="max-width">
+		
+		
+		
           <article id="button-bar" class="component">
             
            
@@ -91,17 +98,31 @@
     <button class="topcoat-button-bar__button--large" id="ellipse"><img src="pics/ellipse.png">Ellipse</button>
   </div>
   <div class="topcoat-button-bar__item">
-    <button class="topcoat-button-bar__button--large" id="set_ellipse"><img src="pics/mag_ellipse.png">Magic  Ellipse</button>
+    <button class="topcoat-button-bar__button--large" id="set_ellipse"><img src="pics/magic.png">Magic Ellipses</button>
   </div>
-  <div class="topcoat-button-bar__item">
-    <button class="topcoat-button-bar__button--large" id="magic_rectangle"><img src="pics/mag_rec.png">Magic  Rectangle</button>
-  </div>
+  
   <div class="topcoat-button-bar__item">
     <button class="topcoat-button-bar__button--large" id="spray"><img src="pics/spray.png">Spray</button>
   </div>
-  <div class="topcoat-button-bar__item"></div>
-  <div class="topcoat-button-bar__item"></div>
-  <div class="topcoat-button-bar__item"></div>
+  <div class="topcoat-button-bar__item">
+    <button class="topcoat-button-bar__button--large" id="star"><img src="pics/star2.png">Star
+	
+	
+	<select id="starCount" class="starNav">
+            <option value="5">5</option>
+            <option value="6">6</option>
+			<option value="8">8</option>
+            <option value="12">12</option>
+			</select>
+	
+	
+	</button>
+	
+			
+
+	
+  </div>
+ 
   <div class="topcoat-button-bar__item">
   <button class="topcoat-button--large" id="eraser"> <img src="pics/eraser.png"> Eraser</button>
   </div>
@@ -112,7 +133,7 @@
           </article>
           <article id="large-buttonbar" class="component">
   <div id="sketch">
-	<canvas  id="paint"></canvas>
+	<canvas  id="paint" ></canvas>
 </div>
 
           </article>
@@ -130,8 +151,8 @@
 				  4  - Rectangle tool <img src="pics/rectangle.png"><br><br>
 				  5  - Ellipse tool <img src="pics/ellipse.png"><br><br>
 				  6  - Magic Ellipse tool <br><br>
-				  7  - Magic Rectangle <img src="pics/mag_rec.png"><br><br>
-				  8  - Spray <img src="pics/spray.png"><br><br>
+				  7  - Spray <img src="pics/spray.png"><br><br>
+				  8 - Star <img src="pics/star.png"><br><br>
 				  9  - Eraser <img src="pics/eraser.png">
     
 	
