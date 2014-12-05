@@ -1,6 +1,7 @@
 // Keep everything in anonymous function, called on window load.
 if(window.addEventListener) {
 window.addEventListener('load', function () {
+
 	
 	var canvas = document.querySelector('#paint');
 	var ctx = canvas.getContext('2d');
@@ -15,8 +16,12 @@ window.addEventListener('load', function () {
     var centerX = canvas_small.width / 2;
     var centerY = canvas_small.height / 2;
     var radius ;
+	var star_count = 5;
 	
 	var temp_color = 'blue';
+	
+	var eventMy = new Event('collision');
+	
 	
 	// Creating a tmp canvas
 	var tmp_canvas = document.createElement('canvas');
@@ -59,6 +64,7 @@ window.addEventListener('load', function () {
 	
 	
 	/* Mouse Capturing Work */
+	
 	tmp_canvas.addEventListener('mousemove', function(e) {
 		mouse.x = typeof e.offsetX !== 'undefined' ? e.offsetX : e.layerX;
 		mouse.y = typeof e.offsetY !== 'undefined' ? e.offsetY : e.layerY;
@@ -102,6 +108,7 @@ window.addEventListener('load', function () {
 	undo_arr.push(empty_canv);
 	
 	tmp_canvas.addEventListener('mousedown', function(e) {
+	console.log("Mouse DIWN");
 		tmp_canvas.addEventListener('mousemove', onPaint, false);
 		
 		mouse.x = typeof e.offsetX !== 'undefined' ? e.offsetX : e.layerX;
@@ -110,19 +117,26 @@ window.addEventListener('load', function () {
 		start_mouse.x = mouse.x;
 		start_mouse.y = mouse.y;
 		
-		ppts.push({x: mouse.x, y: mouse.y});
+		//console.log(mouse.x,canvas.clientWidth,mouse.y,canvas.clientHeight);
 		
-		
+		ppts.push({x: mouse.x, y: mouse.y}); 
+
 		//spraying tool.
 		sprayIntervalID = setInterval(onPaint, 50);
 		
 		onPaint();
 		//onPaintCircle();
-		
+	
 	}, false);
 	
 	tmp_canvas.addEventListener('mouseup', function() {
+	
+	console.log("Mouse UP");
+	
+	
 		tmp_canvas.removeEventListener('mousemove', onPaint, false);
+		
+		
 		
 		// for erasing
 		ctx.globalCompositeOperation = 'source-over';
@@ -130,7 +144,44 @@ window.addEventListener('load', function () {
 		clearInterval(sprayIntervalID);
 		
 		// Writing down to real canvas now
-		ctx.drawImage(tmp_canvas, 0, 0);
+		ctx.drawImage(tmp_canvas, 0, 0); 
+		// Clearing tmp canvas
+		tmp_ctx.clearRect(0, 0, tmp_canvas.width, tmp_canvas.height);
+		
+		// Emptying up Pencil Points
+		ppts = [];
+		
+		
+		
+		undo_arr.push(canvas.toDataURL());	
+		//window.alert(undo_arr.length);
+		undo_count = 0;
+		
+		
+	}, false);
+	
+	tmp_canvas.addEventListener('collision', function() {
+	
+	console.log("Mouse UP");
+	
+		/*if ( mouse.x >= canvas.clientWidth-10 ) { mouse.x = canvas.clientWidth-5; }
+		if ( mouse.y >= canvas.clientHeight-10 ) { mouse.y = canvas.clientHeight-5; }
+	
+		if ( mouse.x <= 10 ) { mouse.x = 5; }
+		if ( mouse.y <= 10 ) { mouse.y = 5; }*/
+	
+		tmp_canvas.removeEventListener('mousemove', onPaint, false);
+		
+		
+		
+		// for erasing
+		ctx.globalCompositeOperation = 'source-over';
+		//spraying tool.
+		clearInterval(sprayIntervalID);
+		
+		
+		// Writing down to real canvas now
+		ctx.drawImage(tmp_canvas, 0, 0); 
 		// Clearing tmp canvas
 		tmp_ctx.clearRect(0, 0, tmp_canvas.width, tmp_canvas.height);
 		
@@ -282,9 +333,18 @@ window.addEventListener('load', function () {
 		
 	});
 	
+	document.getElementById("starCount").addEventListener("change", function() {
+	
+		var x = document.getElementById("starCount").selectedIndex;
+		star_count = document.getElementsByTagName("option")[x].value;
+		
+		
+		});
+	
 	var callClear = function(){
 		
 		if (confirm("Do you really want CLEAR the canvas?")) {
+			undo_arr.push(canvas.toDataURL());	
 			ctx.clearRect(0, 0, tmp_canvas.width, tmp_canvas.height);
 			}
 		
@@ -335,12 +395,15 @@ window.addEventListener('load', function () {
 		case '6':
 			tool = 'set_ellipse';
 			break
+		
 		case '7':
-			tool = 'magic_rectangle';
+			tool = 'spray';
 			break
 			
 		case '8':
-			tool = 'spray';
+			tool = 'star';
+			star_count = prompt("How much points do you want in star?",5);
+			
 			break
 			
 		case '9':
@@ -384,9 +447,9 @@ window.addEventListener('load', function () {
 			callDownload();
 			break
 			
-			
+		
 		default:
-			tool = 'brush';
+			
 			break
 }
 
@@ -411,6 +474,9 @@ window.addEventListener('load', function () {
 	
 	
 	var onPaintCircle = function() {
+	//console.log(mouse.x,canvas.clientWidth,mouse.y,canvas.clientHeight);
+	
+	
  
     // Tmp canvas is always cleared up before drawing.
     tmp_ctx.clearRect(0, 0, tmp_canvas.width, tmp_canvas.height);
@@ -428,6 +494,7 @@ window.addEventListener('load', function () {
     // tmp_ctx.arc(x, y, 5, 0, Math.PI*2, false);
     tmp_ctx.stroke();
     tmp_ctx.closePath();
+	
  
 };
 	
@@ -525,6 +592,34 @@ function drawEllipse(ctx, x, y, w, h) {
 		ctx.closePath();
 		ctx.stroke();
 	};
+	
+function drawStar(p, m)
+{
+
+	tmp_ctx.clearRect(0, 0, tmp_canvas.width, tmp_canvas.height);
+	
+	var x = (mouse.x + start_mouse.x) / 2;
+    var y = (mouse.y + start_mouse.y) / 2;
+	
+	var r = Math.max(
+        Math.abs(mouse.x - start_mouse.x),
+        Math.abs(mouse.y - start_mouse.y)
+    ) / 2;
+	
+    tmp_ctx.save();
+    tmp_ctx.beginPath();
+    tmp_ctx.translate(x, y);
+    tmp_ctx.moveTo(0,0-r);
+    for (var i = 0; i < p; i++)
+    {
+        tmp_ctx.rotate(Math.PI / p);
+        tmp_ctx.lineTo(0, 0 - (r*m));
+        tmp_ctx.rotate(Math.PI / p);
+        tmp_ctx.lineTo(0, 0 - r);
+    }
+    tmp_ctx.fill();
+    tmp_ctx.restore();
+};
 
 	
 	
@@ -626,6 +721,24 @@ function drawEllipse(ctx, x, y, w, h) {
 	
 	var onPaint = function() {
 	
+	//console.log(mouse.x,canvas.clientWidth,mouse.y,canvas.clientHeight);
+	//if ( mouse.x < canvas.clientWidth-10 &&  mouse.y < canvas.clientHeight-10) 
+	if ( mouse.x <=6 || mouse.x >= canvas.clientWidth-6 || mouse.y <=6 || mouse.y >= canvas.clientHeight-6 ) {
+	if ( mouse.x <= 6 ) {	mouse.x = 5; }
+	if ( mouse.x >= canvas.clientWidth-6 ) { mouse.x = canvas.clientWidth-5; }
+	if ( mouse.y <= 6) {	mouse.y = 5; }
+	if ( mouse.y >= canvas.clientHeight-6 ) { mouse.x = canvas.clientHeight-5; }
+	
+		ppts.push({x: mouse.x, y: mouse.y}); 
+		//onPaint();
+		
+		tmp_canvas.dispatchEvent(eventMy);
+		return;
+		//tmp_canvas.click();
+		}
+	
+	
+	
 		if ( tool == 'brush' )
 		{	onPaintBrush(); }
 		else if ( tool == 'circle' )
@@ -660,9 +773,13 @@ function drawEllipse(ctx, x, y, w, h) {
 		var w = Math.abs(mouse.x - start_mouse.x);
 		var h = Math.abs(mouse.y - start_mouse.y);
 		
+		var prev_width = tmp_ctx.lineWidth;
+		
 		tmp_ctx.lineWidth = 0.5;
 		
 		drawEllipse(tmp_ctx, x, y, w, h);
+		
+		tmp_ctx.lineWidth = prev_width;
 		}
 		
 		else if ( tool == 'magic_rectangle' )
@@ -678,6 +795,9 @@ function drawEllipse(ctx, x, y, w, h) {
 		
 		else if ( tool == 'spray' )
 		{	generateSprayParticles(); }
+		
+		else if ( tool == 'star' )
+		{ drawStar(star_count,0.5); }
 		
 		
 		
